@@ -4,12 +4,12 @@ using Domain;
 
 public class FirstRuleSet : BaseRuleSet
 {
-    public override void Play(int[] scores, List<Player> players)
+    public override void Play(ReadOnlySpan<int> scores, List<Player> players)
     {
         SetScores(scores, players);
         SetDifferences(scores, players);
         RankPlayers(players);
         DeductPoints(players);
-        base.Play(scores,players);
+        base.Play(scores, players);
     }
 }

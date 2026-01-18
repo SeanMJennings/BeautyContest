@@ -1,18 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>Unit</RootNamespace>
         <OutputType>Library</OutputType>
+        <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="FluentAssertions" Version="7.0.0-alpha.3" />
-      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-      <PackageReference Include="NSubstitute" Version="5.1.0" />
-      <PackageReference Include="NUnit" Version="4.0.1" />
+      <PackageReference Include="FluentAssertions" Version="8.8.0" />
+      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+      <PackageReference Include="Microsoft.Testing.Extensions.VSTestBridge" Version="2.0.2" />
+      <PackageReference Include="NUnit" Version="4.4.0" />
+      <PackageReference Include="NUnit.Analyzers" Version="4.7.0" />
+      <PackageReference Include="NUnit3TestAdapter" Version="6.1.0" />
+      <PackageReference Include="NSubstitute" Version="5.3.0" />
     </ItemGroup>
 
     <ItemGroup>

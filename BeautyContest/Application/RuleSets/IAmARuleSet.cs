@@ -4,5 +4,5 @@ using Domain;
 
 public interface IAmARuleSet
 {
-    public void Play(int[] scores, List<Player> players);
+    void Play(ReadOnlySpan<int> scores, List<Player> players);
 }

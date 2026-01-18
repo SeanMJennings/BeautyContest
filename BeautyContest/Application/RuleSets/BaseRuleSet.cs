@@ -10,7 +10,7 @@ public abstract class BaseRuleSet : IAmARuleSet
     private static bool playersAreRanked;
     private static bool differencesAreSet;
 
-    public virtual void Play(int[] scores, List<Player> players)
+    public virtual void Play(ReadOnlySpan<int> scores, List<Player> players)
     {
         ResetChecks();
     }
@@ -22,61 +22,66 @@ public abstract class BaseRuleSet : IAmARuleSet
         differencesAreSet = false;
     }
 
-    protected static void SetScores(int[] scores, List<Player> players)
+    protected static void SetScores(ReadOnlySpan<int> scores, List<Player> players)
     {
         if (scoresAreSet) return;
-        
-        var playerCounter = 0;
+
+        var playerIndex = 0;
         foreach (var score in scores)
         {
-            players[playerCounter].Score = score;
-            playerCounter++;
+            players[playerIndex++].Score = score;
         }
 
         scoresAreSet = true;
     }
-    
+
     protected void DeductPoints(List<Player> rankedPlayers)
     {
-        for (int i = 0; i < Penalty; i++ )
+        for (var i = 0; i < Penalty; i++)
         {
             foreach (var player in rankedPlayers.Where(p => p.Rank != 0))
             {
                 player.DeductPoint();
-            }  
+            }
         }
     }
 
     protected static void RankPlayers(List<Player> players)
     {
         if (playersAreRanked) return;
-        players = players.OrderBy(p => p.Difference).ThenByDescending(p => p.Score).ToList();
+        players = [.. players.OrderBy(p => p.Difference).ThenByDescending(p => p.Score)];
         var rank = 0;
         var playerCounter = 0;
-        
+
         foreach (var player in players)
         {
             player.Rank = rank;
-            if (players.Count > playerCounter + 1 && (players[playerCounter].Difference < players[playerCounter + 1].Difference 
-                || (players[playerCounter].Difference == players[playerCounter + 1].Difference && players[playerCounter].Score > players[playerCounter + 1].Score)))
+            if (players.Count > playerCounter + 1 &&
+                (players[playerCounter].Difference < players[playerCounter + 1].Difference ||
+                 (players[playerCounter].Difference == players[playerCounter + 1].Difference &&
+                  players[playerCounter].Score > players[playerCounter + 1].Score)))
             {
                 rank++;
             }
-            
+
             playerCounter++;
         }
 
         playersAreRanked = true;
     }
 
-    protected static void SetDifferences(int[] scores, List<Player> players)
+    protected static void SetDifferences(ReadOnlySpan<int> scores, List<Player> players)
     {
         if (differencesAreSet) return;
-        Goal =  (int)Math.Round(scores.Sum() / (double)scores.Length * 0.8);
+
+        var sum = 0;
+        foreach (var score in scores) sum += score;
+
+        Goal = (int)Math.Round(sum / (double)scores.Length * 0.8);
 
         foreach (var player in players)
         {
-            player.SetDifference(Goal); 
+            player.SetDifference(Goal);
         }
 
         differencesAreSet = true;

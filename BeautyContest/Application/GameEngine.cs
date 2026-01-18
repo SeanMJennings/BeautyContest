@@ -3,41 +3,23 @@ namespace BeautyContest.Application;
 using System.Collections.ObjectModel;
 using Domain;
 using Domain.Exceptions;
-using System.Linq;
 using RuleSets;
 using RuleSets.Factory;
 
-public class GameEngine
+public class GameEngine(IAmARuleSetFactory ruleSetFactory)
 {
-    private readonly IAmARuleSetFactory ruleSetFactory;
     private const int NumberOfPlayers = 5;
-    private const int LowerBound = 0;
-    private const int UpperBound = 100;
-    private readonly List<Player> players = [];
+    private readonly List<Player> players = [.. Enumerable.Range(0, NumberOfPlayers).Select(_ => new Player())];
 
-    public GameEngine(IAmARuleSetFactory ruleSetFactory)
+    public void Play(params ReadOnlySpan<int> scores)
     {
-        this.ruleSetFactory = ruleSetFactory;
-        CreatePlayers();
+        var alivePlayers = players.FindAll(p => p.IsAlive);
+        ValidateScores(scores, alivePlayers.Count);
+
+        ruleSetFactory.GetRuleSet((RuleSet)(NumberOfPlayers - alivePlayers.Count + 1)).Play(scores, alivePlayers);
     }
 
-    private void CreatePlayers()
-    {
-        for (int i = 0; i < NumberOfPlayers; i++)
-        {
-            players.Add(new Player());
-        }
-    }
-
-    public void Play(int[] scores)
-    {
-        var numberOfPlayersAlive = players.Count(p => p.IsAlive);
-        ValidateScores(scores, numberOfPlayersAlive);
-
-        ruleSetFactory.GetRuleSet((RuleSet)(NumberOfPlayers - numberOfPlayersAlive + 1)).Play(scores, players.Where(p => p.IsAlive).ToList());
-    }
-
-    private static void ValidateScores(int[] scores, int numberOfPlayersAlive)
+    private static void ValidateScores(ReadOnlySpan<int> scores, int numberOfPlayersAlive)
     {
         if (scores.Length != numberOfPlayersAlive) throw new IncorrectNumberOfScoresException();
     }
